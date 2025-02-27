@@ -2,7 +2,7 @@ import { NeynarFetcher } from "../src/lib/farcaster";
 import { anthropicParseFarcasterPost } from '../src/lib/anthropic';
 import { createMarket } from '../src/lib/createMarket';
 import path from 'path';
-import { writeFile } from 'fs/promises';
+import { writeFile, readFile } from 'fs/promises';
 
 
 const main = async () => {
@@ -13,17 +13,18 @@ const main = async () => {
     }
 
     const fetcher = new NeynarFetcher(apiKey);
-
+    // Mentions
+    // TODO 4 more market list = 6
     const {casts} = await fetcher.searchByDaysAgo(15);
 
+    const marketData = []
     // loop thru each cast... do only 1 for now
-    for (const cast of [casts[0]]) {
+    for (const cast of casts) {
         const parsedResponse = await anthropicParseFarcasterPost(cast.text);
         console.log("AI response received:", parsedResponse);
     
         // Handle any mapping needed for getting token address for dev/test/main
         if (!parsedResponse.collateralAddress) {
-            console.log("Collateral address not provided, using default USDC on Sepolia");
             parsedResponse.collateralAddress = '0x6A4b68Dca82522d15B30456ae03736aA33483789'; // currently have to use this address for our tests
         }
 
@@ -41,19 +42,10 @@ const main = async () => {
             poolId,
             description: parsedResponse.description
         };
-        
-        //read/save the walrus blob id
 
-        const filePath = path.resolve(__dirname, '../data/mentions.json');
-        await writeFile(filePath, JSON.stringify(data, null, 2));
-
-        const filePath = path.resolve(__dirname, '../data/markets.json');
-        console.log(`Saving market data to ${filePath}`);
-        
-        const savedFilePath = await saveMarketResponseToFile(marketResponse, filePath);
-        console.log(`File successfully saved at: ${savedFilePath}`);
-        
-        console.log('Operation completed successfully');
-            
+        marketData.push(marketResponse);
     }
+        
+    console.log('Operation completed successfully');
+        
 }
