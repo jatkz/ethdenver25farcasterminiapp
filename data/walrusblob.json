@@ -1,0 +1,26 @@
+{
+  "newlyCreated": {
+    "blobObject": {
+      "id": "0xc6e9ba49984d9692a227dbe64baa809ddde4f14c57f65409b95079532a5bf90f",
+      "registeredEpoch": 22,
+      "blobId": "Bo-bIxf6akr-gJH7KFP8VumV-gRNmxz6lBGBKGhM5rQ",
+      "size": 327,
+      "encodingType": "RedStuff",
+      "certifiedEpoch": 22,
+      "storage": {
+        "id": "0x44674e49e6325ea40ab126c03443637a83646f19d0f8584eb0463b409789404d",
+        "startEpoch": 22,
+        "endEpoch": 27,
+        "storageSize": 65023000
+      },
+      "deletable": false
+    },
+    "resourceOperation": {
+      "registerFromScratch": {
+        "encodedLength": 65023000,
+        "epochsAhead": 5
+      }
+    },
+    "cost": 157500
+  }
+}

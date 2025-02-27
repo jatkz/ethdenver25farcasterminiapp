@@ -61,5 +61,5 @@ async function waitForTransactionWithRetry(
     
     return null;
   }
-  
+
 export {waitForTransactionWithRetry};

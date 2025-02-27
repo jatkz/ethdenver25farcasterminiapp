@@ -1,10 +1,8 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
-
-// Load environment variables
+import * as dotenv from 'dotenv';
 dotenv.config();
 
-const PUBLISHER = process.env.PUBLISHER || '';
+const PUBLISHER = process.env.WALRUS_PUBLISHER || '';
 if (PUBLISHER == '') throw 'missing publisher';
 
 interface WalrusMarketData {
@@ -16,7 +14,7 @@ async function storeMarketData(marketData: WalrusMarketData[]) {
   try {
     const stringifiedJson = JSON.stringify(marketData)
     const response = await axios.put(
-      `${PUBLISHER}/v1/blobs?epochs=100`,
+      `${PUBLISHER}/v1/blobs?epochs=5`,
       stringifiedJson,
       {
         headers: {
@@ -38,7 +36,7 @@ async function storeMarketData(marketData: WalrusMarketData[]) {
   }
 }
 
-const AGGREGATOR = process.env.AGGREGATOR || 'https://aggregator-url.example.com';
+const AGGREGATOR = process.env.WALRUS_AGGREGATOR || 'https://aggregator-url.example.com';
 if (AGGREGATOR == '') throw 'missing aggregator';
 
 async function getMarketData(blobId: string) {

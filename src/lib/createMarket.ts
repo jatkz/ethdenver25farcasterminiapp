@@ -1,7 +1,8 @@
 import { waitForTransactionWithRetry } from '@/lib/utils';
 import {ethers} from 'ethers';
-import MarketMakerHookABI from '../src/contracts/abis/MarketMakerHook.json';
-
+import MarketMakerHookABI from '@/contracts/abis/MarketMakerHook.json';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 // Contract address - store in .env file for security
 const MARKET_MAKER_HOOK_ADDRESS = process.env.MARKET_MAKER_HOOK_ADDRESS || '';
@@ -36,44 +37,14 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
   
   try {
     // First approve the MarketMakerHook to spend your tokens if using ERC20 as collateral
-    const erc20Interface = new ethers.Interface([
-        'function balanceOf(address account) view returns (uint256)',
-        'function allowance(address owner, address spender) view returns (uint256)',
-        'function approve(address spender, uint256 amount) returns (bool)',
-        'function decimals() view returns (uint8)'
-      ]);
-    const tokenContract = new ethers.Contract(collateralAddress, erc20Interface, wallet);
-  
+    await handleCollateralAllowance(collateralAddress, wallet, collateralAmount);
     
-    const decimals = await tokenContract.decimals();
-    console.log(`Token decimals: ${decimals}`);
-    
-    // Check token balance
-    const tokenBalance = await tokenContract.balanceOf(wallet.address);
-    console.log(`Token balance: ${ethers.formatUnits(tokenBalance, decimals)} tokens`);
-    if (tokenBalance < collateralAmount) {
-        console.error(`Insufficient token balance. Have ${ethers.formatUnits(tokenBalance, decimals)}, need ${ethers.formatUnits(collateralAmount, decimals)}`);
-        throw new Error('Insufficient token balance');
-      }
-    
-    // Check if approval is needed
-    const allowance = await tokenContract.allowance(wallet.address, MARKET_MAKER_HOOK_ADDRESS);
-    console.log(`Current allowance: ${ethers.formatUnits(allowance, decimals)} tokens`);
-
-    if (allowance < collateralAmount) {
-      console.log('Approving tokens...');
-      const approveTx = await tokenContract.approve(MARKET_MAKER_HOOK_ADDRESS, collateralAmount);
-      await approveTx.wait();
-      console.log(`Approval transaction: ${approveTx.hash}`);
-    }
-
+    // encode function data
     const data = marketMakerHook.interface.encodeFunctionData(
         'createMarketAndDepositCollateral',
         [oracle, creator, collateralAddress, collateralAmount]
       );
-      
-      console.log('Encoded function data:', data);
-      
+            
       // Create and send the transaction manually
       const tx = await wallet.sendTransaction({
         to: MARKET_MAKER_HOOK_ADDRESS,
@@ -102,8 +73,7 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
 
       // Find the log with this event signature
       const marketCreatedLog = txSpecificLogs.find(
-        log => log.topics[0] === marketCreatedEventSignature &&
-              log.address.toLowerCase() === MARKET_MAKER_HOOK_ADDRESS.toLowerCase()
+        log => log.address.toLowerCase() === MARKET_MAKER_HOOK_ADDRESS.toLowerCase()
       );
 
       if (marketCreatedLog) {
@@ -111,12 +81,6 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
         // Assuming the event structure has the poolId as the last parameter
         const poolId = marketCreatedLog.data.slice(-64); // Last 32 bytes (64 hex chars)
         console.log(`Market created with pool ID: 0x${poolId}`);
-
-        // Now you can use this poolId to call the markets function
-        const formattedPoolId = poolId.startsWith('0x') ? poolId : `0x${poolId}`;
-        const market = await marketMakerHook.markets(formattedPoolId);
-        // const market = await marketMakerHook.markets(poolId);
-        console.log("Market details:", market);
       
         return poolId;
       }
@@ -127,4 +91,39 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
     console.error('Error creating market:', error);
     throw error;
   }
+}
+
+const handleCollateralAllowance = async (collateralAddress: string, wallet: ethers.Wallet, collateralAmount: bigint) => {
+        // First approve the MarketMakerHook to spend your tokens if using ERC20 as collateral
+        const erc20Interface = new ethers.Interface([
+            'function balanceOf(address account) view returns (uint256)',
+            'function allowance(address owner, address spender) view returns (uint256)',
+            'function approve(address spender, uint256 amount) returns (bool)',
+            'function decimals() view returns (uint8)'
+          ]);
+        const tokenContract = new ethers.Contract(collateralAddress, erc20Interface, wallet);
+      
+        
+        const decimals = await tokenContract.decimals();
+        console.log(`Token decimals: ${decimals}`);
+        
+        // Check token balance
+        const tokenBalance = await tokenContract.balanceOf(wallet.address);
+        console.log(`Token balance: ${ethers.formatUnits(tokenBalance, decimals)} tokens`);
+        if (tokenBalance < collateralAmount) {
+            console.error(`Insufficient token balance. Have ${ethers.formatUnits(tokenBalance, decimals)}, need ${ethers.formatUnits(collateralAmount, decimals)}`);
+            throw new Error('Insufficient token balance');
+          }
+        
+        // Check if approval is needed
+        const allowance = await tokenContract.allowance(wallet.address, MARKET_MAKER_HOOK_ADDRESS);
+        console.log(`Current allowance: ${ethers.formatUnits(allowance, decimals)} tokens`);
+    
+        if (allowance < collateralAmount) {
+          console.log('Approving tokens...');
+          const approveTx = await tokenContract.approve(MARKET_MAKER_HOOK_ADDRESS, collateralAmount);
+          await approveTx.wait();
+          console.log(`Approval transaction: ${approveTx.hash}`);
+        }
+    
 }

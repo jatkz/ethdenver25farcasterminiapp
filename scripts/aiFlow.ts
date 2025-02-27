@@ -3,7 +3,9 @@ import { anthropicParseFarcasterPost } from '../src/lib/anthropic';
 import { createMarket } from '../src/lib/createMarket';
 import path from 'path';
 import { writeFile, readFile } from 'fs/promises';
-
+import { storeMarketData } from "@/lib/walrus";
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 const main = async () => {
 
@@ -45,7 +47,24 @@ const main = async () => {
 
         marketData.push(marketResponse);
     }
+
+    // Walrus save end data description with pool ids
+    const walrusStoredResponse = await storeMarketData(marketData);
+
+    //store response to file
+    const filePath = path.resolve(__dirname, '../data/walrusblob.json');
+    await writeFile(filePath, JSON.stringify(walrusStoredResponse, null, 2));
+
+    console.log('Successfully stored Blob Response')
         
     console.log('Operation completed successfully');
         
 }
+
+// Execute the function
+main()
+  .then(() => process.exit(0))
+  .catch(error => {
+    console.error(error);
+    process.exit(1);
+  });
