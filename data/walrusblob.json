@@ -1,14 +1,14 @@
 {
   "newlyCreated": {
     "blobObject": {
-      "id": "0xc6e9ba49984d9692a227dbe64baa809ddde4f14c57f65409b95079532a5bf90f",
+      "id": "0xb1b922ccf2ed89950e7bfcd5af87a99e90c91b995067f0522c869ee12a33469c",
       "registeredEpoch": 22,
-      "blobId": "Bo-bIxf6akr-gJH7KFP8VumV-gRNmxz6lBGBKGhM5rQ",
-      "size": 327,
+      "blobId": "zIqBLHF3b8-prg7GhpcAtS73eZD4MnL893fUAEPhhXA",
+      "size": 328,
       "encodingType": "RedStuff",
       "certifiedEpoch": 22,
       "storage": {
-        "id": "0x44674e49e6325ea40ab126c03443637a83646f19d0f8584eb0463b409789404d",
+        "id": "0x05edeb0447cc38d3b07890a9812a9b5fbf9a18fffc1249dfa16a52a9c091ed89",
         "startEpoch": 22,
         "endEpoch": 27,
         "storageSize": 65023000

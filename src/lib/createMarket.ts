@@ -65,8 +65,25 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
         blockHash: receipt.blockHash
       });
 
+      console.log(txLogs);
+      console.log(receipt);
+
       // Filter logs for only those from your transaction
       const txSpecificLogs = txLogs.filter(log => log.transactionHash === receipt.hash);
+
+      console.log(txSpecificLogs)
+      console.log('tes')
+
+      
+    // // Log specific properties of each log
+    // txSpecificLogs.forEach((log, index) => {
+    //     console.log(`Log #${index + 1}:`);
+    //     console.log(`  Address: ${log.address}`);
+    //     console.log(`  Topics: ${log.topics}`);
+    //     console.log(`  Data: ${log.data}`);
+    //     console.log(`  Block Number: ${log.blockNumber}`);
+    //     console.log('-------------------');
+    // });
 
       // After getting the receipt and logs
       const marketCreatedEventSignature = '0x1cbee7c4e3c575e7f2c0fbc27b89ce2a0636ffa1f47983b91719c42d5d8e1886';
@@ -83,6 +100,18 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
         console.log(`Market created with pool ID: 0x${poolId}`);
       
         return poolId;
+      } else {
+
+        txLogs.forEach(log => {
+            const value = log.data.slice(-64); // Last 32 bytes (64 hex chars)
+            console.log(`Test: 0x${value} - ${log.index}`);
+        console.log(`  Address: ${log.address}`);
+        console.log(`  Topics: ${log.topics}`);
+        console.log(`  Data: ${log.data}`);
+        console.log('-------------------');
+        })
+        console.log(receipt);
+
       }
     } else {
       console.log('no receipt :(')

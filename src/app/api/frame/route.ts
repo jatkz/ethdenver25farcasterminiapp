@@ -1,7 +1,6 @@
 // File: app/api/frame/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getFrameMessage, FrameRequest } from '@neynar/nextjs-sdk';
-import { validateMessage } from '@farcaster/core';
+import { FrameActionDataParsedAndHubContext, FrameActionPayload, getFrameMessage } from 'frames.js';
 import { createPersonalizedFrameResponse } from '../../utils/neynar';
 
 // Base URL for your application
@@ -10,39 +9,57 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 export async function POST(req: NextRequest) {
   try {
     // Parse and validate the frame message
-    const body: FrameRequest = await req.json();
-    const { isValid, message } = await getFrameMessage(body);
+    const body: FrameActionPayload = await req.json();
+    const frameMessage: FrameActionDataParsedAndHubContext = await getFrameMessage(body);
 
-    if (!isValid || !message) {
-      return NextResponse.json({ error: 'Invalid frame message' }, { status: 400 });
-    }
+    if (frameMessage) {
+        // Check if the frame action is valid
+        const isValid = frameMessage.isValid;
+        
+        if (isValid) {
+          // Access the actual data
+          const { buttonIndex, inputText, castId } = frameMessage;
+          
+          // Now you can use these properties
+          console.log(`Button clicked: ${buttonIndex}`);
+          console.log(`User FID: ${castId?.fid}`);
+          
+          // Continue with your logic based on button index
+          switch (buttonIndex) {
+            case 1:
+              // Handle button 1 click
+              break;
+            // Other cases...
+          }
+        }
+      }
 
     // Handle different button actions
     let nextFrameMetadata;
     
     // If Neynar API key is present, use personalized responses
-    if (process.env.NEYNAR_API_KEY && message.fid) {
+    if (process.env.NEYNAR_API_KEY && frameMessage.castId?.fid) {
       try {
-        switch (message.button) {
+        switch (frameMessage.buttonIndex) {
           case 1:
-            nextFrameMetadata = await createPersonalizedFrameResponse(message.fid, 'page1', BASE_URL);
+            nextFrameMetadata = await createPersonalizedFrameResponse(frameMessage.castId?.fid, 'page1', BASE_URL);
             break;
           case 2:
-            nextFrameMetadata = await createPersonalizedFrameResponse(message.fid, 'page2', BASE_URL);
+            nextFrameMetadata = await createPersonalizedFrameResponse(frameMessage.castId?.fid, 'page2', BASE_URL);
             break;
           case 3:
-            nextFrameMetadata = await createPersonalizedFrameResponse(message.fid, 'page3', BASE_URL);
+            nextFrameMetadata = await createPersonalizedFrameResponse(frameMessage.castId?.fid, 'page3', BASE_URL);
             break;
           case 4:
-            nextFrameMetadata = await createPersonalizedFrameResponse(message.fid, 'thank-you', BASE_URL);
+            nextFrameMetadata = await createPersonalizedFrameResponse(frameMessage.castId?.fid, 'thank-you', BASE_URL);
             break;
           default:
-            nextFrameMetadata = await createPersonalizedFrameResponse(message.fid, 'welcome', BASE_URL);
+            nextFrameMetadata = await createPersonalizedFrameResponse(frameMessage.castId?.fid, 'welcome', BASE_URL);
         }
       } catch (error) {
         console.error('Error creating personalized response:', error);
         // Fall back to standard responses if personalization fails
-        switch (message.button) {
+        switch (frameMessage.buttonIndex) {
           case 1:
             nextFrameMetadata = getFirstPageMetadata();
             break;
@@ -61,7 +78,7 @@ export async function POST(req: NextRequest) {
       }
     } else {
       // Use standard responses without personalization
-      switch (message.button) {
+      switch (frameMessage.buttonIndex) {
         case 1:
           nextFrameMetadata = getFirstPageMetadata();
           break;
