@@ -28,7 +28,7 @@ async function storeMarketData(marketData: WalrusMarketData[]) {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('Axios error:', error.response?.data || error.message);
+      // console.error('Axios error:', error.response?.data || error.message);
     } else {
       console.error('Error storing blob:', error);
     }
@@ -41,6 +41,7 @@ if (AGGREGATOR == '') throw 'missing aggregator';
 
 async function getMarketData(blobId: string) {
   try {
+    console.log(`${AGGREGATOR}/v1/blobs/${blobId}`);
     const response = await axios.get(
       `${AGGREGATOR}/v1/blobs/${blobId}`,
       {
@@ -55,7 +56,7 @@ async function getMarketData(blobId: string) {
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('Axios error:', error.response?.data || error.message);
+      // console.error('Axios error:', error.response?.data || error.message);
     } else {
       console.error('Error retrieving blob:', error);
     }

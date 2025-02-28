@@ -69,3 +69,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+
+wallet_data.txt

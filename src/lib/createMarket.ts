@@ -12,7 +12,8 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY || '';
 if (!PRIVATE_KEY) throw 'missing private key';
 
 export async function createMarket(collateralTokenAddress?: string|undefined) {
-  console.log('Address', collateralTokenAddress);
+  console.log('contract ', MARKET_MAKER_HOOK_ADDRESS);
+  console.log('token Address', collateralTokenAddress);
 
   // Create provider and signer - ethers v6 syntax
   const provider = new ethers.JsonRpcProvider(RPC_URL);
@@ -28,10 +29,10 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
   );
   
   // Parameters for createMarketAndDepositCollateral
-  const oracle = '0xD6139B01CDf8e2A33df49d85D128397fE8c7419b'; // Address of the oracle
+  const oracle = '0x2BaCF90B0f789eCD503a8d117bDd4E84F233fEA7' //'0x39dc391f8FFE71156212C7c3196Ef09B9C0bdDf8'; // Address of the oracle
   const creator = wallet.address; // Using your wallet as the creator
   const collateralAddress = collateralTokenAddress||'0x6A4b68Dca82522d15B30456ae03736aA33483789'; // ERC20 token to use as collateral
-  const collateralAmount = ethers.parseUnits('10', 6); // Amount of collateral (10 tokens with 18 decimals)
+  const collateralAmount = ethers.parseUnits('100', 6); // Amount of collateral (10 tokens with 18 decimals)
   
   console.log('Creating market...');
   
@@ -59,21 +60,15 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
 
     if (receipt) {
       console.log(`Transaction confirmed in block ${receipt.blockNumber}`);
+      console.log(receipt);
             
       // After getting the receipt
       const txLogs = await provider.getLogs({
         blockHash: receipt.blockHash
       });
 
-      console.log(txLogs);
-      console.log(receipt);
-
       // Filter logs for only those from your transaction
       const txSpecificLogs = txLogs.filter(log => log.transactionHash === receipt.hash);
-
-      console.log(txSpecificLogs)
-      console.log('tes')
-
       
     // // Log specific properties of each log
     // txSpecificLogs.forEach((log, index) => {
@@ -102,14 +97,14 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
         return poolId;
       } else {
 
-        txLogs.forEach(log => {
-            const value = log.data.slice(-64); // Last 32 bytes (64 hex chars)
-            console.log(`Test: 0x${value} - ${log.index}`);
-        console.log(`  Address: ${log.address}`);
-        console.log(`  Topics: ${log.topics}`);
-        console.log(`  Data: ${log.data}`);
-        console.log('-------------------');
-        })
+        // txLogs.forEach(log => {
+        //     const value = log.data.slice(-64); // Last 32 bytes (64 hex chars)
+        //     console.log(`Test: 0x${value} - ${log.index}`);
+        // console.log(`  Address: ${log.address}`);
+        // console.log(`  Topics: ${log.topics}`);
+        // console.log(`  Data: ${log.data}`);
+        // console.log('-------------------');
+        // })
         console.log(receipt);
 
       }
@@ -156,3 +151,4 @@ const handleCollateralAllowance = async (collateralAddress: string, wallet: ethe
         }
     
 }
+

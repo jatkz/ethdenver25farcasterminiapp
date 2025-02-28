@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "aiFlow": "tsx scripts/aiFlow.ts",
-    "readWalrus": "tsx scripts/readWalrusDescriptions.ts"
+    "readWalrus": "tsx scripts/readWalrusDescriptions.ts",
+    "resolve": "tsx scripts/resolveMarket.ts"
   },
   "dependencies": {
     "@farcaster/core": "^0.15.6",

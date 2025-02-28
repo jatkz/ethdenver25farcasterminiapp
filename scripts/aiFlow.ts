@@ -48,12 +48,14 @@ const main = async () => {
         marketData.push(marketResponse);
     }
 
-    // Walrus save end data description with pool ids
-    const walrusStoredResponse = await storeMarketData(marketData);
+    // console.log('Saving Walrus');
 
-    //store response to file
-    const filePath = path.resolve(__dirname, '../data/walrusblob.json');
-    await writeFile(filePath, JSON.stringify(walrusStoredResponse, null, 2));
+    // // Walrus save end data description with pool ids
+    // const walrusStoredResponse = await storeMarketData(marketData);
+
+    // //store response to file
+    // const filePath = path.resolve(__dirname, '../data/walrusblob.json');
+    // await writeFile(filePath, JSON.stringify(walrusStoredResponse, null, 2));
 
     console.log('Successfully stored Blob Response')
         
