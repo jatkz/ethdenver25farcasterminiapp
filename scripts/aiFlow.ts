@@ -19,9 +19,10 @@ const main = async () => {
     // TODO 4 more market list = 6
     const {casts} = await fetcher.searchByDaysAgo(15);
     console.log(casts)
-    const gcasts = casts.find(x=> x.text.indexOf('2 minutes') > -1)
+    const gcasts = casts.find(x=> x.text.indexOf('minutes') > -1)
     if (!gcasts) throw "no casts found"
 
+    let lastPoolId = '';
     const marketData = []
     // loop thru each cast... do only 1 for now
     for (const cast of [gcasts]) {
@@ -49,6 +50,7 @@ const main = async () => {
         };
 
         marketData.push(marketResponse);
+        lastPoolId = poolId;
     }
 
     console.log('Saving Walrus');
@@ -63,7 +65,9 @@ const main = async () => {
     console.log('Successfully stored Blob Response')
         
     console.log('Operation completed successfully');
-        
+
+    let url = `https://eth-denver-frontend-pi.vercel.app/market/${'0x'+lastPoolId}/blob/${walrusStoredResponse.newlyCreated.blobObject.blobId}`
+    console.log(url)
 }
 
 // Execute the function

@@ -1,16 +1,16 @@
 {
   "newlyCreated": {
     "blobObject": {
-      "id": "0xd452e73b52529d761f9394f4c23d1ca29ee95c4be0cbe0131735aa0de0858488",
+      "id": "0x8e446605032ab743632313a0dcd484672b34e532c7f2ee02abb10cab0b37d297",
       "registeredEpoch": 22,
-      "blobId": "dKvh13iQ9fWF4I9LVQ4f-RKCXDbptH_JOwvOexdciBw",
-      "size": 149,
+      "blobId": "arh8KbWxP8j4eAJAxF8cbuy9jxgdWTS9HSpefly4P6k",
+      "size": 155,
       "encodingType": "RedStuffRaptorQ",
       "certifiedEpoch": 22,
       "storage": {
-        "id": "0x065f7986a8212c832e8bab230610c81d83e1c34697256d268d65f30d590f12b2",
+        "id": "0x9875eba160577c86a8abb5af85c154c6c129b0e12af484451579c136948e78f9",
         "startEpoch": 22,
-        "endEpoch": 27,
+        "endEpoch": 25,
         "storageSize": 65023000
       },
       "deletable": false
@@ -18,9 +18,9 @@
     "resourceOperation": {
       "registerFromScratch": {
         "encodedLength": 65023000,
-        "epochsAhead": 5
+        "epochsAhead": 3
       }
     },
-    "cost": 157500
+    "cost": 144900
   }
 }

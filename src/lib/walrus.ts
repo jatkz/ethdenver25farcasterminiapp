@@ -14,7 +14,7 @@ async function storeMarketData(marketData: WalrusMarketData[]) {
   try {
     const stringifiedJson = JSON.stringify(marketData)
     const response = await axios.put(
-      `${PUBLISHER}/v1/blobs?epochs=5`,
+      `${PUBLISHER}/v1/blobs?epochs=3`,
       stringifiedJson,
       {
         headers: {
