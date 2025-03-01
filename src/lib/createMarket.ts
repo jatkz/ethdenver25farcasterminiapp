@@ -42,7 +42,7 @@ export async function createMarket(collateralTokenAddress?: string|undefined) {
     
     // encode function data
     const data = marketMakerHook.interface.encodeFunctionData(
-        'createMarketAndDepositCollateral',
+        'createMarketWithCollateralAndLiquidity',
         [oracle, creator, collateralAddress, collateralAmount]
       );
             

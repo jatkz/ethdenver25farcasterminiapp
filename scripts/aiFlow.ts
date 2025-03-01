@@ -18,10 +18,13 @@ const main = async () => {
     // Mentions
     // TODO 4 more market list = 6
     const {casts} = await fetcher.searchByDaysAgo(15);
+    console.log(casts)
+    const gcasts = casts.find(x=> x.text.indexOf('2 minutes') > -1)
+    if (!gcasts) throw "no casts found"
 
     const marketData = []
     // loop thru each cast... do only 1 for now
-    for (const cast of casts) {
+    for (const cast of [gcasts]) {
         const parsedResponse = await anthropicParseFarcasterPost(cast.text);
         console.log("AI response received:", parsedResponse);
     
@@ -48,14 +51,14 @@ const main = async () => {
         marketData.push(marketResponse);
     }
 
-    // console.log('Saving Walrus');
+    console.log('Saving Walrus');
 
-    // // Walrus save end data description with pool ids
-    // const walrusStoredResponse = await storeMarketData(marketData);
+    // Walrus save end data description with pool ids
+    const walrusStoredResponse = await storeMarketData(marketData);
 
-    // //store response to file
-    // const filePath = path.resolve(__dirname, '../data/walrusblob.json');
-    // await writeFile(filePath, JSON.stringify(walrusStoredResponse, null, 2));
+    //store response to file
+    const filePath = path.resolve(__dirname, '../data/walrusblob.json');
+    await writeFile(filePath, JSON.stringify(walrusStoredResponse, null, 2));
 
     console.log('Successfully stored Blob Response')
         
